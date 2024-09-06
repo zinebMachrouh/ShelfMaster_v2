@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: zineb2003
+        POSTGRES_DB: ShelfMaster
+    ports:
+        - "5432:5432"
+    volumes:
+        - ./data/:/var/lib/postgresql/data
+    #restart: always
