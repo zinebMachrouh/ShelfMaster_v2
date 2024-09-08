@@ -1,29 +1,41 @@
 package main.java.business;
 
+import main.java.dao.StudentDAO;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class Student {
-    private String id;
+    private UUID id;
     private String name;
     private String email;
     private String studyProgram;
 
-    public Student(String name, String email, String studyProgram) {
+    public StudentDAO studentDAO;
+
+    public Student(String name, String email, String studyProgram,Connection connection){
         this.id = generateUuid();
         this.name = name;
         this.email = email;
         this.studyProgram = studyProgram;
+
+        this.studentDAO = new StudentDAO(connection);
     }
 
-    public Student(){
-        this.id = "";
+    public Student(Connection connection){
+        this.id = null;
         this.name = "";
         this.email = "";
         this.studyProgram = "";
 
+        this.studentDAO = new StudentDAO(connection);
     }
-    private String generateUuid() {
-        return UUID.randomUUID().toString();
+
+    private UUID generateUuid() {
+        return UUID.randomUUID();
     }
 
     public String getName() {
@@ -38,9 +50,77 @@ public class Student {
         return studyProgram;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
+    public void addStudent(Scanner scanner) throws SQLException {
+        System.out.println("Enter student name: ");
+        this.name = scanner.nextLine();
+        System.out.println("Enter student email: ");
+        this.email = scanner.nextLine();
+        System.out.println("Enter student study program: ");
+        this.studyProgram = scanner.nextLine();
 
+        this.id = generateUuid();
+
+        studentDAO.addStudent(this.id.toString(), this.name, this.email, this.studyProgram);
+    }
+
+    public boolean studentExists(String email) throws SQLException {
+        boolean exists = studentDAO.studentExists(email);
+        if (exists){
+            ResultSet rs = studentDAO.getStudent(email);
+            while (rs.next()){
+                this.id = UUID.fromString(rs.getString("id"));
+                this.name = rs.getString("name");
+                this.email = rs.getString("email");
+                this.studyProgram = rs.getString("studyprogram");
+            }
+        } else {
+            System.out.println("Student does not exist.");
+        }
+        return exists;
+    }
+
+    public void updateStudent(Scanner scanner) throws SQLException {
+        System.out.println("Enter student name: ");
+        if (scanner.hasNextLine()){
+            this.name = scanner.nextLine();
+        }else {
+            this.name = "";
+        }
+        System.out.println("Enter student email: ");
+        if (scanner.hasNextLine()){
+            this.email = scanner.nextLine();
+        }else {
+            this.email = "";
+        }
+        System.out.println("Enter student study program: ");
+        if (scanner.hasNextLine()){
+            this.studyProgram = scanner.nextLine();
+        }else {
+            this.studyProgram = "";
+        }
+
+        studentDAO.updateStudent(this.id.toString(), this.name, this.email, this.studyProgram);
+    }
+
+    public void deleteStudent() throws SQLException {
+        studentDAO.deleteStudent(this.id.toString());
+    }
+
+    public void getStudents() throws SQLException {
+        studentDAO.getAllStudents();
+    }
+
+    public void getStudent(String email) throws SQLException {
+        ResultSet rs = studentDAO.getStudent(email);
+        while (rs.next()){
+            this.id = UUID.fromString(rs.getString("id"));
+            this.name = rs.getString("name");
+            this.email = rs.getString("email");
+            this.studyProgram = rs.getString("studyprogram");
+        }
+    }
 }

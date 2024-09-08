@@ -3,19 +3,21 @@ package main.java.dao;
 import main.java.dao.interfaces.StudentDAOInterface;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class StudentDAO implements StudentDAOInterface {
-    Connection connection;
+    private final Connection connection;
 
     public StudentDAO(Connection connection) {
         this.connection = connection;
     }
 
-    public void addStudent(String name, String email, String studyProgram) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO students (name, email, studyprogram) VALUES (?, ?, ?)");
-        ps.setString(1, name);
-        ps.setString(2, email);
-        ps.setString(3, studyProgram);
+    public void addStudent(String id,String name, String email, String studyProgram) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO students (id,name, email, studyprogram) VALUES (?::uuid,?, ?, ?)");
+        ps.setString(1, id);
+        ps.setString(2, name);
+        ps.setString(3, email);
+        ps.setString(4, studyProgram);
         ps.executeUpdate();
         ps.close();
         System.out.println("Student added successfully");
@@ -81,9 +83,9 @@ public class StudentDAO implements StudentDAOInterface {
         System.out.println("Student deleted successfully");
     }
 
-    public boolean studentExists(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM students WHERE id = ?");
-        ps.setString(1, id);
+    public boolean studentExists(String email) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM students WHERE email = ?");
+        ps.setString(1, email);
         ResultSet rs = ps.executeQuery();
         boolean exists = rs.next();
         rs.close();
@@ -92,19 +94,34 @@ public class StudentDAO implements StudentDAOInterface {
         return exists;
     }
 
-    public void getStudent(String searchTerm) throws SQLException {
-        try {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM students where id = ? OR  email = ?");
-            ps.setString(1, searchTerm);
-            ps.setString(2, searchTerm);
-            ResultSet rs = ps.executeQuery();
-            displayData(rs);
-            rs.close();
-            ps.close();
+    public ResultSet getStudent(String searchTerm) throws SQLException {
+        ResultSet rs = null;
+        PreparedStatement ps = null;
 
-        } catch (SQLClientInfoException e) {
+        try {
+            if (isValidUUID(searchTerm)) {
+                ps = connection.prepareStatement("SELECT * FROM students WHERE id = ?::uuid");
+                ps.setObject(1, searchTerm, java.sql.Types.OTHER);
+            } else {
+                ps = connection.prepareStatement("SELECT * FROM students WHERE email = ?");
+                ps.setString(1, searchTerm);
+            }
+
+            rs = ps.executeQuery();
+        } catch (SQLException e) {
             System.err.println("SQL Exception: " + e.getMessage());
             e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    private boolean isValidUUID(String uuid) {
+        try {
+            UUID.fromString(uuid);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
