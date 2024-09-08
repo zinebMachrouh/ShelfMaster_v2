@@ -1,4 +1,4 @@
-package Utils;
+package main.java.utils;
 
 public class DateUtils {
 }

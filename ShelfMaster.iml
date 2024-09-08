@@ -9,4 +9,11 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="postgresql-42.7.4" level="project" />
   </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/src/main/resources" />
+      </list>
+    </option>
+  </component>
 </module>
