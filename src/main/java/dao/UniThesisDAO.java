@@ -1,6 +1,6 @@
 package main.java.dao;
 
-import main.java.dao.interfaces.BookDAOInterface;
+import main.java.dao.interfaces.UniThesisInterface;
 import main.java.utils.DateUtils;
 import main.java.utils.InputValidator;
 
@@ -9,35 +9,38 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BookDAO implements BookDAOInterface {
+public class UniThesisDAO implements UniThesisInterface {
     private final Connection connection;
     InputValidator inputValidator = new InputValidator();
-    public  BookDAO(Connection connection) {
+
+    public UniThesisDAO(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public void addBook(String id, String title, String author, String releaseDate, int pages, String isbn) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO books (id, title, author, releasedate, pages, isbn) VALUES (?::uuid, ?, ?, ?, ?, ?)");
+    public void addUniThesis(String id, String title, String author, String releaseDate, int pages, String university, String fieldOfStudy, int submittedYear) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO unitheses (id, title, author, releasedate, pages, university, fieldofstudy, submittedyear) VALUES (?::uuid, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, id);
         ps.setString(2, title);
         ps.setString(3, author);
         ps.setObject(4, DateUtils.fromDateString(releaseDate));
         ps.setInt(5, pages);
-        ps.setString(6, isbn);
+        ps.setString(6, university);
+        ps.setString(7, fieldOfStudy);
+        ps.setInt(8, submittedYear);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Book added successfully");
+        System.out.println("University Thesis added successfully");
     }
 
     @Override
-    public void updateBook(String id, String title, String author, String releaseDate, int pages, String isbn) throws SQLException {
-        if (title.isEmpty() && author.isEmpty() && releaseDate.isEmpty() && pages == 0 && isbn.isEmpty()) {
+    public void updateUniThesis(String id, String title, String author, String releaseDate, int pages, String university, String fieldOfStudy, int submittedYear) throws SQLException {
+        if (title.isEmpty() && author.isEmpty() && releaseDate.isEmpty() && pages == 0 && university.isEmpty() && fieldOfStudy.isEmpty() && submittedYear == 0) {
             System.out.println("No fields to update.");
             return;
         }
 
-        StringBuilder sql = new StringBuilder("UPDATE books SET ");
+        StringBuilder sql = new StringBuilder("UPDATE unitheses SET ");
         boolean firstField = true;
 
         if (!title.isEmpty()) {
@@ -65,11 +68,25 @@ public class BookDAO implements BookDAOInterface {
             sql.append("pages = ?");
             firstField = false;
         }
-        if (!isbn.isEmpty()) {
+        if (!university.isEmpty()) {
             if (!firstField) {
                 sql.append(", ");
             }
-            sql.append("isbn = ?");
+            sql.append("university = ?");
+            firstField = false;
+        }
+        if (!fieldOfStudy.isEmpty()) {
+            if (!firstField) {
+                sql.append(", ");
+            }
+            sql.append("fieldofstudy = ?");
+            firstField = false;
+        }
+        if (submittedYear != 0) {
+            if (!firstField) {
+                sql.append(", ");
+            }
+            sql.append("submittedyear = ?");
         }
 
         sql.append(" WHERE id = ?");
@@ -89,39 +106,46 @@ public class BookDAO implements BookDAOInterface {
         if (pages != 0) {
             ps.setInt(i++, pages);
         }
-        if (!isbn.isEmpty()) {
-            ps.setString(i++, isbn);
+        if (!university.isEmpty()) {
+            ps.setString(i++, university);
+        }
+        if (!fieldOfStudy.isEmpty()) {
+            ps.setString(i++, fieldOfStudy);
+        }
+        if (submittedYear != 0) {
+            ps.setInt(i++, submittedYear);
         }
 
         ps.setString(i, id);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Book updated successfully");
+        System.out.println("University Thesis updated successfully");
     }
 
     @Override
-    public void deleteBook(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM books WHERE id = ?::uuid");
+    public void deleteUniThesis(String id) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM unitheses WHERE id = ?::uuid");
         ps.setString(1, id);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Book deleted successfully");
+        System.out.println("University Thesis deleted successfully");
     }
 
     @Override
-    public ResultSet getBook(String searchTerm) throws SQLException {
+    public ResultSet getUniThesis(String searchTerm) throws SQLException {
         ResultSet rs = null;
         PreparedStatement ps = null;
 
         try {
             if (inputValidator.validateId(searchTerm)) {
-                ps = connection.prepareStatement("SELECT * FROM books WHERE id = ?::uuid");
+                ps = connection.prepareStatement("SELECT * FROM unitheses WHERE id = ?::uuid");
                 ps.setObject(1, searchTerm, java.sql.Types.OTHER);
             } else {
-                ps = connection.prepareStatement("SELECT * FROM books WHERE title = ? OR author = ? OR isbn = ?");
+                ps = connection.prepareStatement("SELECT * FROM unitheses WHERE title = ? OR author = ? OR university = ? OR fieldofstudy = ?");
                 ps.setString(1, searchTerm);
                 ps.setString(2, searchTerm);
                 ps.setString(3, searchTerm);
+                ps.setString(4, searchTerm);
             }
 
             rs = ps.executeQuery();
@@ -134,8 +158,14 @@ public class BookDAO implements BookDAOInterface {
     }
 
     @Override
-    public boolean bookExists(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM books WHERE id = ?::uuid");
+    public ResultSet getAllUniThesis() throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM unitheses ORDER BY releasedate DESC");
+        return ps.executeQuery();
+    }
+
+    @Override
+    public boolean uniThesisExists(String id) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM unitheses WHERE id = ?::uuid");
         ps.setString(1, id);
         ResultSet rs = ps.executeQuery();
         boolean exists = rs.next();
@@ -144,12 +174,4 @@ public class BookDAO implements BookDAOInterface {
 
         return exists;
     }
-
-    @Override
-    public ResultSet getAllBooks() throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM books ORDER BY releasedate DESC");
-        return ps.executeQuery();
-    }
-
-
 }

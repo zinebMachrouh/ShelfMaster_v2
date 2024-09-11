@@ -1,9 +1,6 @@
 package main.java.ui;
 
-import main.java.business.Book;
-import main.java.business.Document;
-import main.java.business.Magazine;
-import main.java.business.Student;
+import main.java.business.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -210,12 +207,14 @@ public class ConsoleUI {
                 break;
             case 3:
                 System.out.println(CYAN + "+ Manage University Thesis Selected +" + RESET);
-
+                UniversityThesis universityThesis = new UniversityThesis(connection);
+                universityThesis.thesisMenu(scanner);
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 4:
                 System.out.println(CYAN + "+ Manage Scientific Journal Selected +" + RESET);
-
+                ScientificJournal scientificJournal = new ScientificJournal(connection);
+                scientificJournal.journalMenu(scanner);
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 5:
@@ -223,6 +222,35 @@ public class ConsoleUI {
                 break;
             default:
                 System.out.println(RED + "+ Error: Invalid choice. Please select a number between 1 and 5 +" + RESET);
+        }
+    }
+
+    public void manageUsersMenu(Scanner scanner) throws SQLException{
+        System.out.println(CYAN + "+ Manage Users Selected +" + RESET);
+        System.out.println(BLUE + "+ 1. " + RESET + "Manage Students                 " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 2. " + RESET + "Manage Professors               " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 3. " + RESET + "Back to Main Menu               " + BLUE + "+" + RESET);
+        System.out.print(BLUE + "+" + RESET + " Please select an option (1-3): ");
+        int manageUsersChoice = scanner.nextInt();
+        scanner.nextLine();
+        switch (manageUsersChoice) {
+            case 1:
+                System.out.println(CYAN + "+ Manage Students Selected +" + RESET);
+                Student student = new Student(connection);
+                student.studentMenu(scanner);
+                handleMiniMenu(scanner, UserRole.ADMIN);
+                break;
+            case 2:
+                System.out.println(CYAN + "+ Manage Professors Selected +" + RESET);
+                /*Professor professor = new Professor(connection);
+                professor.professorMenu(scanner);
+                handleMiniMenu(scanner, UserRole.ADMIN);*/
+                break;
+            case 3:
+                adminMenu(scanner);
+                break;
+            default:
+                System.out.println(RED + "+ Error: Invalid choice. Please select a number between 1 and 3 +" + RESET);
         }
     }
 }

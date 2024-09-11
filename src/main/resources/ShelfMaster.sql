@@ -33,13 +33,13 @@ CREATE TABLE magazines(
     number int,
 ) inherits (documents);
 
-CREATE TABLE scientificJournal(
+CREATE TABLE scientificJournals(
     researchField varchar(100),
     editor varchar(50),
 ) inherits (documents);
 
-CREATE TABLE universityTheisis(
+CREATE TABLE unitheses(
     university varchar(250),
     fieldOfStudy varchar(100),
-    submitedYear int,
+    submittedYear int,
 ) inherits (documents);

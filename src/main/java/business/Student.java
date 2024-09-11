@@ -111,7 +111,7 @@ public class Student {
     }
 
     public void getStudents() throws SQLException {
-        studentDAO.getAllStudents();
+        displayData(studentDAO.getAllStudents());
     }
 
     public void getStudent(String email) throws SQLException {
@@ -122,5 +122,22 @@ public class Student {
             this.email = rs.getString("email");
             this.studyProgram = rs.getString("studyprogram");
         }
+    }
+
+    public void displayData(ResultSet rs) {
+        try {
+            while (rs.next()) {
+                System.out.println("Student ID: " + rs.getInt("id"));
+                System.out.println("Student Name: " + rs.getString("name"));
+                System.out.println("Student Email: " + rs.getString("email"));
+                System.out.println("Student Study Program: " + rs.getString("studyprogram"));
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void studentMenu(Scanner scanner) {
     }
 }

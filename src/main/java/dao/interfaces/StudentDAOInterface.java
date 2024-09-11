@@ -8,6 +8,6 @@ public interface StudentDAOInterface {
     public void updateStudent(String id,String name, String email, String studyProgram) throws SQLException;
     public void deleteStudent(String id) throws SQLException;
     public ResultSet getStudent(String searchTerm) throws SQLException;
-    public void getAllStudents() throws SQLException;
+    public ResultSet getAllStudents() throws SQLException;
     public boolean studentExists(String id) throws SQLException;
 }

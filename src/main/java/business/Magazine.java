@@ -168,12 +168,30 @@ public class Magazine extends Document {
             return;
         } else {
             while (rs.next()) {
-                System.out.println("ID: " + rs.getString("id") + "\n" +
-                        "Title: " + rs.getString("title") + "\n"
-                        + "Author: " + rs.getString("author") + "\n"
-                        + "Release Date: " + rs.getString("releasedate") + "\n"
-                        + "Pages: " + rs.getInt("pages") + "\n"
-                        + "Number: " + rs.getInt("number") + "\n");
+                StringBuilder output = new StringBuilder();
+                output.append("ID: ").append(rs.getString("id")).append("\n")
+                        .append("Title: ").append(rs.getString("title")).append("\n")
+                        .append("Author: ").append(rs.getString("author")).append("\n")
+                        .append("Release Date: ").append(rs.getString("releasedate")).append("\n")
+                        .append("Pages: ").append(rs.getInt("pages")).append("\n")
+                        .append("Number: ").append(rs.getInt("number")).append("\n");
+
+                String borrowedBy = rs.getString("borrowedby");
+                String reservedBy = rs.getString("reservedby");
+
+                if (borrowedBy == null && reservedBy == null) {
+                    output.append("Status: Available");
+                } else if (borrowedBy != null) {
+                    output.append("Status: Borrowed");
+                } else {
+                    output.append("Status: Reserved");
+                }
+
+                System.out.println(output.toString());
+
+                if (!rs.isLast()) {
+                    System.out.println("----------------------------\n");
+                }
             }
         }
     }

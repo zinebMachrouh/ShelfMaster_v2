@@ -1,6 +1,6 @@
 package main.java.dao;
 
-import main.java.dao.interfaces.MagazineDAOInterface;
+import main.java.dao.interfaces.SciJournalDAOInterface;
 import main.java.utils.DateUtils;
 import main.java.utils.InputValidator;
 
@@ -9,36 +9,37 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MagazineDAO implements MagazineDAOInterface {
+public class ScientificJournalDAO implements SciJournalDAOInterface {
     private final Connection connection;
-
     InputValidator inputValidator = new InputValidator();
-    public MagazineDAO(Connection connection) {
+
+    public ScientificJournalDAO(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public void addMagazine(String id, String title, String author, String releaseDate, int pages, int number) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO magazines (id, title, author, releasedate, pages, number) VALUES (?::uuid, ?, ?, ?, ?, ?)");
+    public void addScientificJournal(String id, String title, String author, String releaseDate, int pages, String researchField, String editor) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO scientificjournals (id, title, author, releasedate, pages, researchfield, editor) VALUES (?::uuid, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, id);
         ps.setString(2, title);
         ps.setString(3, author);
         ps.setObject(4, DateUtils.fromDateString(releaseDate));
         ps.setInt(5, pages);
-        ps.setInt(6, number);
+        ps.setString(6, researchField);
+        ps.setString(7, editor);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Magazine added successfully");
+        System.out.println("Scientific journal added successfully");
     }
 
     @Override
-    public void updateMagazine(String id, String title, String author, String releaseDate, int pages, int number) throws SQLException {
-        if (title.isEmpty() && author.isEmpty() && releaseDate.isEmpty() && pages == 0 && number == 0) {
+    public void updateScientificJournal(String id, String title, String author, String releaseDate, int pages, String researchField, String editor) throws SQLException {
+        if (title.isEmpty() && author.isEmpty() && releaseDate.isEmpty() && pages == 0 && researchField.isEmpty() && editor.isEmpty()) {
             System.out.println("No fields to update.");
             return;
         }
 
-        StringBuilder sql = new StringBuilder("UPDATE magazines SET ");
+        StringBuilder sql = new StringBuilder("UPDATE scientificjournals SET ");
         boolean firstField = true;
 
         if (!title.isEmpty()) {
@@ -66,66 +67,74 @@ public class MagazineDAO implements MagazineDAOInterface {
             sql.append("pages = ?");
             firstField = false;
         }
-        if (number != 0) {
+        if (!researchField.isEmpty()) {
             if (!firstField) {
                 sql.append(", ");
             }
-            sql.append("number = ?");
+            sql.append("researchfield = ?");
             firstField = false;
         }
+        if (!editor.isEmpty()) {
+            if (!firstField) {
+                sql.append(", ");
+            }
+            sql.append("editor = ?");
+        }
+
         sql.append(" WHERE id = ?");
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());
 
         int i = 1;
-        if(!title.isEmpty()) {
+        if (!title.isEmpty()) {
             ps.setString(i++, title);
         }
-        if(!author.isEmpty()) {
+        if (!author.isEmpty()) {
             ps.setString(i++, author);
         }
-        if(!releaseDate.isEmpty()) {
+        if (!releaseDate.isEmpty()) {
             ps.setString(i++, releaseDate);
         }
-        if(pages != 0) {
+        if (pages != 0) {
             ps.setInt(i++, pages);
         }
-        if(number != 0) {
-            ps.setInt(i++, number);
+        if (!researchField.isEmpty()) {
+            ps.setString(i++, researchField);
+        }
+        if (!editor.isEmpty()) {
+            ps.setString(i++, editor);
         }
 
         ps.setString(i, id);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Magazine updated successfully");
+        System.out.println("Scientific journal updated successfully");
     }
 
     @Override
-    public void deleteMagazine(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM magazines WHERE id = ?::uuid");
+    public void deleteScientificJournal(String id) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM scientificjournals WHERE id = ?::uuid");
         ps.setString(1, id);
         ps.executeUpdate();
         ps.close();
-        System.out.println("Magazine deleted successfully");
+        System.out.println("Scientific journal deleted successfully");
     }
 
     @Override
-    public ResultSet getMagazine(String searchTerm) throws SQLException {
+    public ResultSet getScientificJournal(String searchTerm) throws SQLException {
         ResultSet rs = null;
         PreparedStatement ps = null;
+
         try {
             if (inputValidator.validateId(searchTerm)) {
-                ps = connection.prepareStatement("SELECT * FROM magazines WHERE id = ?::uuid");
+                ps = connection.prepareStatement("SELECT * FROM scientificjournals WHERE id = ?::uuid");
                 ps.setObject(1, searchTerm, java.sql.Types.OTHER);
             } else {
-                ps = connection.prepareStatement("SELECT * FROM magazines WHERE title = ? OR author = ? OR number = ?");
+                ps = connection.prepareStatement("SELECT * FROM scientificjournals WHERE title = ? OR author = ? OR researchfield = ? OR editor = ?");
                 ps.setString(1, searchTerm);
                 ps.setString(2, searchTerm);
-                if (inputValidator.validateNumber(searchTerm)) {
-                    ps.setInt(3, Integer.parseInt(searchTerm));
-                } else {
-                    ps.setInt(3, 0);
-                }
+                ps.setString(3, searchTerm);
+                ps.setString(4, searchTerm);
             }
 
             rs = ps.executeQuery();
@@ -133,19 +142,19 @@ public class MagazineDAO implements MagazineDAOInterface {
             System.err.println("SQL Exception: " + e.getMessage());
             e.printStackTrace();
         }
+
         return rs;
     }
 
     @Override
-    public ResultSet getAllMagazines() throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM magazines ORDER BY releasedate DESC");
+    public ResultSet getAllScientificJournals() throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM scientificjournals ORDER BY releasedate DESC");
         return ps.executeQuery();
-
     }
 
     @Override
-    public boolean magazineExists(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM magazines WHERE id = ?::uuid");
+    public boolean scientificJournalExists(String id) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM scientificjournals WHERE id = ?::uuid");
         ps.setString(1, id);
         ResultSet rs = ps.executeQuery();
         boolean exists = rs.next();
@@ -154,6 +163,4 @@ public class MagazineDAO implements MagazineDAOInterface {
 
         return exists;
     }
-
-
 }

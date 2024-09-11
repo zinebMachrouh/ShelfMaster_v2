@@ -14,6 +14,7 @@ public class StudentDAO implements StudentDAOInterface {
 
     }
 
+    @Override
     public void addStudent(String id,String name, String email, String studyProgram) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("INSERT INTO students (id,name, email, studyprogram) VALUES (?::uuid,?, ?, ?)");
         ps.setString(1, id);
@@ -25,6 +26,7 @@ public class StudentDAO implements StudentDAOInterface {
         System.out.println("Student added successfully");
     }
 
+    @Override
     public void updateStudent(String id, String name, String email, String studyProgram) throws SQLException {
         if (name.isEmpty() && email.isEmpty() && studyProgram.isEmpty()) {
             System.out.println("No fields to update.");
@@ -77,6 +79,7 @@ public class StudentDAO implements StudentDAOInterface {
         System.out.println("Student updated successfully.");
     }
 
+    @Override
     public void deleteStudent(String id) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("DELETE FROM students WHERE id = ?");
         ps.setString(1, id);
@@ -85,6 +88,7 @@ public class StudentDAO implements StudentDAOInterface {
         System.out.println("Student deleted successfully");
     }
 
+    @Override
     public boolean studentExists(String email) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM students WHERE email = ?");
         ps.setString(1, email);
@@ -96,6 +100,7 @@ public class StudentDAO implements StudentDAOInterface {
         return exists;
     }
 
+    @Override
     public ResultSet getStudent(String searchTerm) throws SQLException {
         ResultSet rs = null;
         PreparedStatement ps = null;
@@ -119,27 +124,11 @@ public class StudentDAO implements StudentDAOInterface {
     }
 
 
-
-    public void getAllStudents() throws SQLException {
+    @Override
+    public ResultSet getAllStudents() throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM students");
-        ResultSet rs = ps.executeQuery();
-        displayData(rs);
-        rs.close();
-        ps.close();
-        System.out.println("All students retrieved");
+        return ps.executeQuery();
     }
 
-    public void displayData(ResultSet rs) {
-        try {
-            while (rs.next()) {
-                System.out.println("Student ID: " + rs.getInt("id"));
-                System.out.println("Student Name: " + rs.getString("name"));
-                System.out.println("Student Email: " + rs.getString("email"));
-                System.out.println("Student Study Program: " + rs.getString("studyprogram"));
-            }
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+
 }
