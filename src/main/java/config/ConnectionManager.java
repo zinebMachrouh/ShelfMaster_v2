@@ -1,58 +1,38 @@
 package main.java.config;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class ConnectionManager {
 
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5434/ShelfMaster";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "zineb2003";
-
-
-    private static ConnectionManager instance;
-
-
-    private Connection connection;
-
+    private static final String PROPERTIES_FILE = "app.properties";
 
     private ConnectionManager() {
-        try {
-
-            this.connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
-
-    public static ConnectionManager getInstance() {
-        if (instance == null) {
-            synchronized (ConnectionManager.class) {
-                if (instance == null) {
-                    instance = new ConnectionManager();
-                }
+    public static Connection getConnection() throws SQLException {
+        try (InputStream input = ConnectionManager.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+            if (input == null) {
+                throw new RuntimeException("Unable to find " + PROPERTIES_FILE + " file.");
             }
-        }
-        return instance;
-    }
+            Properties properties = new Properties();
+            properties.load(input);
 
+            String driver = properties.getProperty("driver");
+            String url = properties.getProperty("url");
+            String username = properties.getProperty("username");
+            String password = properties.getProperty("password");
 
-    public Connection getConnection() {
-        return connection;
-    }
+            Class.forName(driver);
 
+            return DriverManager.getConnection(url, username, password);
 
-    public void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                System.err.println("Error closing the connection: " + e.getMessage());
-            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Error establishing database connection: " + e.getMessage(), e);
         }
     }
 }

@@ -1,5 +1,8 @@
 package main.java.ui;
 
+import main.java.business.Book;
+import main.java.business.Document;
+import main.java.business.Magazine;
 import main.java.business.Student;
 
 import java.sql.Connection;
@@ -7,7 +10,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    private Connection connection;
+    private final Connection connection;
+    private static Document document;
+
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
     public static final String BLUE = "\033[0;34m";
@@ -23,6 +28,7 @@ public class ConsoleUI {
 
     public ConsoleUI(Connection connection) throws SQLException {
         this.connection = connection;
+        this.document = new Document(connection);
         menu();
     }
 
@@ -45,17 +51,18 @@ public class ConsoleUI {
             int choice = scanner.nextInt();
             scanner.nextLine();
 
+                Student student = new Student(connection);
             switch (choice) {
                 case 1:
                     System.out.println(MAGENTA + "+" + RESET + " Please enter your email:");
                     String email = scanner.nextLine();
 
-                    Student student = new Student(connection);
+
                     if (student.studentExists(email)) {
                         System.out.println((BLUE + "+ Welcome back, " + RESET + student.getName() + BLUE + "!" + RESET));
                         studentMenu(scanner);
                     } else {
-                        running = false;
+                        student.addStudent(scanner);
                     }
                     break;
                 case 2:
@@ -75,7 +82,7 @@ public class ConsoleUI {
         scanner.close();
     }
 
-    public static void adminMenu(Scanner scanner) {
+    public void adminMenu(Scanner scanner) throws SQLException {
         System.out.println(BLUE + "++++++++++" + RESET + " Admin Menu " + BLUE + "++++++++++" + RESET);
         System.out.println(BLUE + "+ 1. " + RESET + "Manage Documents          " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 2. " + RESET + "Manage Users              " + BLUE + "+" + RESET);
@@ -89,6 +96,7 @@ public class ConsoleUI {
 
         switch (adminChoice) {
             case 1:
+                manageDocumentsMenu(scanner);
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 2:
@@ -107,11 +115,11 @@ public class ConsoleUI {
     }
 
 
-    public static void studentMenu(Scanner scanner) {
+    public void studentMenu(Scanner scanner) throws SQLException {
         System.out.println(BLUE + "+++++++++++++" + RESET + " Student Menu " + BLUE + "+++++++++++++" + RESET);
         System.out.println(BLUE + "+ 1. " + RESET + "View Documents                     " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 2. " + RESET + "Search Documents                   " + BLUE + "+" + RESET);
-        System.out.println(BLUE + "+ 3. " + RESET + "View Profile                       " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 3. " + RESET + "My List                            " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 4. " + RESET + "Edit Profile                       " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 5. " + RESET + "Log Out                            " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+++++++++++++++++++++++++++++++++++++++++" + RESET);
@@ -120,6 +128,8 @@ public class ConsoleUI {
 
         switch (scanner.nextInt()) {
             case 1:
+                System.out.println(BLUE + "+ View Documents Selected +" + RESET);
+                document.displayDocuments(UserRole.STUDENT);
                 handleMiniMenu(scanner, UserRole.STUDENT);
                 break;
             case 2:
@@ -140,7 +150,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void handleMiniMenu(Scanner scanner, UserRole role) {
+    private  void handleMiniMenu(Scanner scanner, UserRole role) throws SQLException {
         boolean backToMainMenu = true;
 
         while (backToMainMenu) {
@@ -157,10 +167,10 @@ public class ConsoleUI {
                 case 1:
                     backToMainMenu = false;
                     if (role == UserRole.STUDENT) {
-                        ConsoleUI.studentMenu(scanner);
+                        studentMenu(scanner);
                     } else if (role == UserRole.ADMIN) {
 
-                        ConsoleUI.adminMenu(scanner);
+                        adminMenu(scanner);
                     } else if (role == UserRole.PROFESSOR) {
 
                     }
@@ -172,6 +182,47 @@ public class ConsoleUI {
                 default:
                     System.out.println(RED + "+ Error: Invalid choice. Please select 1 or 2 +" + RESET);
             }
+        }
+    }
+
+    public void manageDocumentsMenu(Scanner scanner) throws SQLException {
+        System.out.println(CYAN + "+ Manage Documents Selected +" + RESET);
+        System.out.println(BLUE + "+ 1. " + RESET + "Manage Books                        " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 2. " + RESET + "Manage Magazines                    " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 3. " + RESET + "Manages University Thesis           " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 4. " + RESET + "Manage Scientific Journal           " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 5. " + RESET + "Back to Main Menu                   " + BLUE + "+" + RESET);
+        System.out.print(BLUE + "+" + RESET + " Please select an option (1-5): ");
+        int manageDocumentsChoice = scanner.nextInt();
+        scanner.nextLine();
+        switch (manageDocumentsChoice) {
+            case 1:
+                System.out.println(CYAN + "+ Manage Books Selected +" + RESET);
+                Book book = new Book(connection);
+                book.bookMenu(scanner);
+                handleMiniMenu(scanner, UserRole.ADMIN);
+                break;
+            case 2:
+                System.out.println(CYAN + "+ Manage Magazines Selected +" + RESET);
+                Magazine magazine = new Magazine(connection);
+                magazine.magazineMenu(scanner);
+                handleMiniMenu(scanner, UserRole.ADMIN);
+                break;
+            case 3:
+                System.out.println(CYAN + "+ Manage University Thesis Selected +" + RESET);
+
+                handleMiniMenu(scanner, UserRole.ADMIN);
+                break;
+            case 4:
+                System.out.println(CYAN + "+ Manage Scientific Journal Selected +" + RESET);
+
+                handleMiniMenu(scanner, UserRole.ADMIN);
+                break;
+            case 5:
+                adminMenu(scanner);
+                break;
+            default:
+                System.out.println(RED + "+ Error: Invalid choice. Please select a number between 1 and 5 +" + RESET);
         }
     }
 }

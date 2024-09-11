@@ -19,8 +19,8 @@ CREATE TABLE documents(
     author varchar(100),
     releaseDate date,
     pages int,
-    borrowedBy uuid,
-    reservedBy uuid,
+    borrowedBy uuid null,
+    reservedBy uuid null,
     FOREIGN KEY (borrowedBy) REFERENCES users(id),
     FOREIGN KEY (reservedBy) REFERENCES users(id),
 );

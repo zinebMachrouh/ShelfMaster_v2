@@ -1,15 +1,17 @@
 package main.java.dao;
 
 import main.java.dao.interfaces.StudentDAOInterface;
+import main.java.utils.InputValidator;
 
 import java.sql.*;
 import java.util.UUID;
 
 public class StudentDAO implements StudentDAOInterface {
     private final Connection connection;
-
+    InputValidator inputValidator = new InputValidator();
     public StudentDAO(Connection connection) {
         this.connection = connection;
+
     }
 
     public void addStudent(String id,String name, String email, String studyProgram) throws SQLException {
@@ -99,7 +101,7 @@ public class StudentDAO implements StudentDAOInterface {
         PreparedStatement ps = null;
 
         try {
-            if (isValidUUID(searchTerm)) {
+            if (inputValidator.validateId(searchTerm)) {
                 ps = connection.prepareStatement("SELECT * FROM students WHERE id = ?::uuid");
                 ps.setObject(1, searchTerm, java.sql.Types.OTHER);
             } else {
@@ -116,14 +118,7 @@ public class StudentDAO implements StudentDAOInterface {
         return rs;
     }
 
-    private boolean isValidUUID(String uuid) {
-        try {
-            UUID.fromString(uuid);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
+
 
     public void getAllStudents() throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM students");
