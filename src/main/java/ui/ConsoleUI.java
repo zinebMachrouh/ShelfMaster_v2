@@ -59,7 +59,7 @@ public class ConsoleUI {
                         System.out.println((BLUE + "+ Welcome back, " + RESET + student.getName() + BLUE + "!" + RESET));
                         studentMenu(scanner);
                     } else {
-                        student.addStudent(scanner);
+                        System.out.println(RED + "+ Error: Student not found. Please contact your administrator." + RESET);
                     }
                     break;
                 case 2:
@@ -102,7 +102,11 @@ public class ConsoleUI {
                 break;
             case 3:
                 Student student = new Student(connection);
+                Professor professor = new Professor(connection);
+
                 student.statistics();
+                System.out.println(CYAN+"\n------------------------------------\n"+RESET);
+                professor.statistics();
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 4:

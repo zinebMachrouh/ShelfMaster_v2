@@ -80,10 +80,13 @@ public class Document {
     public void displayDocuments(ConsoleUI.UserRole role) throws SQLException {
         System.out.println("Books:");
         book.getBooks();
+        System.out.println("\n--------------------------------------\n");
         System.out.println("Magazines:");
         magazine.getMagazines();
         if (role == ConsoleUI.UserRole.ADMIN || role == ConsoleUI.UserRole.PROFESSOR) {
+            System.out.println("\n--------------------------------------\n");
             scientificJournal.getScientificJournals();
+            System.out.println("\n--------------------------------------\n");
             universityThesis.getTheses();
         }
     }

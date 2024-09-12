@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ProfessorDAO implements ProfessorDAOInterface {
@@ -148,4 +149,26 @@ public class ProfessorDAO implements ProfessorDAOInterface {
 
         return exists;
     }
+    public HashMap<String, Integer> statistics() throws SQLException {
+        HashMap<String, Integer> statistics = new HashMap<>();
+
+        String sql = "SELECT " +
+                "  (SELECT COUNT(*) FROM professors) AS totalProfessors, " +
+                "  (SELECT COUNT(DISTINCT borrowedby) FROM documents WHERE borrowedby IN (SELECT id FROM professors) AND reservedby IS NULL) AS borrowedDocs, " +
+                "  (SELECT COUNT(DISTINCT reservedby) FROM documents WHERE reservedby IN (SELECT id FROM professors) AND borrowedby IS NULL) AS reservedDocs";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                statistics.put("totalProfessors", rs.getInt("totalProfessors"));
+                statistics.put("borrowedDocs", rs.getInt("borrowedDocs"));
+                statistics.put("reservedDocs", rs.getInt("reservedDocs"));
+            }
+        }
+
+        return statistics;
+
+    }
+
 }

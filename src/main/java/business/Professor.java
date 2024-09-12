@@ -5,6 +5,7 @@ import main.java.dao.ProfessorDAO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -106,6 +107,15 @@ public class Professor extends User {
             System.err.println("SQL Exception: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void statistics() throws SQLException {
+        System.out.println("Professor statistics:");
+        HashMap<String, Integer> statistics = professorDAO.statistics();
+        for (String key : statistics.keySet()) {
+            System.out.println(key + ": " + statistics.get(key));
+        }
+
     }
 
     public void professorMenu(Scanner scanner) {
