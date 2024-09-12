@@ -109,7 +109,7 @@ public class ScientificJournal extends Document {
         scientificJournalDAO.addScientificJournal(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), this.researchField, this.editor);
     }
 
-    public void updateScientificJournal(Scanner scanner) throws SQLException {
+    public void updateScientificJournal(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter journal title: ");
         if (scanner.hasNextLine()) {
             setTitle(scanner.nextLine());
@@ -154,7 +154,7 @@ public class ScientificJournal extends Document {
             this.editor = "";
         }
 
-        scientificJournalDAO.updateScientificJournal(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), this.researchField, this.editor);
+        scientificJournalDAO.updateScientificJournal(id, getTitle(), getAuthor(), getReleaseDate(), getPages(), this.researchField, this.editor);
     }
 
     public boolean scientificJournalExists(String id) throws SQLException {
@@ -251,7 +251,7 @@ public class ScientificJournal extends Document {
                         System.out.println("Enter journal ID: ");
                         String id = scanner.nextLine();
                         if (scientificJournalExists(id)) {
-                            updateScientificJournal(scanner);
+                            updateScientificJournal(scanner, id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());

@@ -103,7 +103,7 @@ public class Book extends Document{
     }
 
 
-    public void updateBook(Scanner scanner) throws SQLException {
+    public void updateBook(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter book title: ");
         if (scanner.hasNextLine()) {
             setTitle(scanner.nextLine());
@@ -140,7 +140,7 @@ public class Book extends Document{
         }else{
             this.isbn = "";
         }
-        bookDAO.updateBook(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), this.isbn);
+        bookDAO.updateBook(id, getTitle(), getAuthor(), getReleaseDate(), getPages(), this.isbn);
 
     }
 
@@ -236,7 +236,7 @@ public class Book extends Document{
                         System.out.println("Enter book ID: ");
                         String id = scanner.nextLine();
                         if (bookExists(id)) {
-                            updateBook(scanner);
+                            updateBook(scanner, id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());

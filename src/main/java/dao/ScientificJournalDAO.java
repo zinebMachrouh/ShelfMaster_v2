@@ -81,7 +81,7 @@ public class ScientificJournalDAO implements SciJournalDAOInterface {
             sql.append("editor = ?");
         }
 
-        sql.append(" WHERE id = ?");
+        sql.append(" WHERE id = ?::uuid");
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());
 

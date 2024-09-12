@@ -4,10 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface ProfessorDAOInterface {
-    public void addProfessor(String id, String name, String email) throws SQLException;
-    public void updateProfessor(String id, String name, String email) throws SQLException;
-    public void deleteProfessor(String id) throws SQLException;
-    public ResultSet getProfessor(String searchTerm) throws SQLException;
-    public ResultSet getAllProfessors() throws SQLException;
-    public boolean professorExists(String id) throws SQLException;
+    void addProfessor(String id, String name, String email, String department) throws SQLException;
+    void updateProfessor(String id, String name, String email, String department) throws SQLException;
+    void deleteProfessor(String id) throws SQLException;
+    ResultSet getProfessor(String searchTerm) throws SQLException;
+    ResultSet getAllProfessors() throws SQLException;
+    boolean professorExists(String searchTerm) throws SQLException;
 }

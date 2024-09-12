@@ -72,7 +72,7 @@ public class BookDAO implements BookDAOInterface {
             sql.append("isbn = ?");
         }
 
-        sql.append(" WHERE id = ?");
+        sql.append(" WHERE id = ?::uuid");
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());
 
@@ -84,7 +84,7 @@ public class BookDAO implements BookDAOInterface {
             ps.setString(i++, author);
         }
         if (!releaseDate.isEmpty()) {
-            ps.setString(i++, releaseDate);
+            ps.setObject(i++, DateUtils.fromDateString(releaseDate));
         }
         if (pages != 0) {
             ps.setInt(i++, pages);

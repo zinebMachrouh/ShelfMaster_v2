@@ -89,7 +89,7 @@ public class UniThesisDAO implements UniThesisInterface {
             sql.append("submittedyear = ?");
         }
 
-        sql.append(" WHERE id = ?");
+        sql.append(" WHERE id = ?::uuid");
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());
 

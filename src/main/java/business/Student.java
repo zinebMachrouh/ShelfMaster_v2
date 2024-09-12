@@ -68,7 +68,7 @@ public class Student extends User {
         return exists;
     }
 
-    public void updateStudent(Scanner scanner) throws SQLException {
+    public void updateStudent(Scanner scanner , String id) throws SQLException {
         System.out.println("Enter student name: ");
         setName(scanner.nextLine());
         System.out.println("Enter student email: ");
@@ -76,7 +76,7 @@ public class Student extends User {
         System.out.println("Enter student study program: ");
         this.studyProgram = scanner.nextLine();
 
-        studentDAO.updateStudent(getId().toString(), getName(), getEmail(), this.studyProgram);
+        studentDAO.updateStudent(id, getName(), getEmail(), this.studyProgram);
     }
 
     public void deleteStudent() throws SQLException {
@@ -146,7 +146,7 @@ public class Student extends User {
                         System.out.println("Enter student id: ");
                         String id = scanner.nextLine();
                         if (studentExists(id)) {
-                            updateStudent(scanner);
+                            updateStudent(scanner,id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());

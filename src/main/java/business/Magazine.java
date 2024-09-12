@@ -105,7 +105,7 @@ public class Magazine extends Document {
     }
 
 
-    public void updateMagazine(Scanner scanner) throws SQLException {
+    public void updateMagazine(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter magazine title: ");
         if (scanner.hasNextLine()) {
             setTitle(scanner.nextLine());
@@ -128,7 +128,7 @@ public class Magazine extends Document {
             setReleaseDate("");
         }
 
-        magazineDAO.updateMagazine(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), this.number);
+        magazineDAO.updateMagazine(id, getTitle(), getAuthor(), getReleaseDate(), getPages(), this.number);
     }
 
     public boolean magazineExists(String id) throws SQLException {
@@ -222,7 +222,7 @@ public class Magazine extends Document {
                     System.out.println("Enter magazine ID: ");
                     String id = scanner.nextLine();
                     if (magazineExists(id)) {
-                        updateMagazine(scanner);
+                        updateMagazine(scanner, id);
                     }
                     break;
                 case 3:

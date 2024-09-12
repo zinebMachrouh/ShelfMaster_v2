@@ -55,7 +55,7 @@ public class StudentDAO implements StudentDAOInterface {
             sql.append("studyprogram = ?");
         }
 
-        sql.append(" WHERE id = ?");
+        sql.append(" WHERE id = ?::uuid");
 
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());

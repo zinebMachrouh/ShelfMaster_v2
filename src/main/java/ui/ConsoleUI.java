@@ -245,9 +245,9 @@ public class ConsoleUI {
                 break;
             case 2:
                 System.out.println(CYAN + "+ Manage Professors Selected +" + RESET);
-                /*Professor professor = new Professor(connection);
+                Professor professor = new Professor(connection);
                 professor.professorMenu(scanner);
-                handleMiniMenu(scanner, UserRole.ADMIN);*/
+                handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 3:
                 adminMenu(scanner);

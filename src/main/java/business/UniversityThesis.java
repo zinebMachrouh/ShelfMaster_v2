@@ -109,7 +109,7 @@ public class UniversityThesis extends Document {
         uniThesisDAO.addUniThesis(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), university, fieldOfStudy, submittedYear);
     }
 
-    public void updateThesis(Scanner scanner) throws SQLException {
+    public void updateThesis(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter thesis title: ");
         if (scanner.hasNextLine()) {
             setTitle(scanner.nextLine());
@@ -161,7 +161,7 @@ public class UniversityThesis extends Document {
         }
         scanner.nextLine();
 
-        uniThesisDAO.updateUniThesis(getId().toString(), getTitle(), getAuthor(), getReleaseDate(), getPages(), university, fieldOfStudy, submittedYear);
+        uniThesisDAO.updateUniThesis(id, getTitle(), getAuthor(), getReleaseDate(), getPages(), university, fieldOfStudy, submittedYear);
     }
 
     public boolean thesisExists(String id) throws SQLException {
@@ -261,7 +261,7 @@ public class UniversityThesis extends Document {
                         System.out.println("Enter thesis ID: ");
                         String id = scanner.nextLine();
                         if (thesisExists(id)) {
-                            updateThesis(scanner);
+                            updateThesis(scanner, id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());
