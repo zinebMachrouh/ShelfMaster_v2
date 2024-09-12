@@ -4,6 +4,7 @@ import main.java.dao.interfaces.StudentDAOInterface;
 import main.java.utils.InputValidator;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class StudentDAO implements StudentDAOInterface {
@@ -81,7 +82,7 @@ public class StudentDAO implements StudentDAOInterface {
 
     @Override
     public void deleteStudent(String id) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM students WHERE id = ?");
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM students WHERE id = ?::uuid");
         ps.setString(1, id);
         ps.executeUpdate();
         ps.close();
@@ -89,13 +90,33 @@ public class StudentDAO implements StudentDAOInterface {
     }
 
     @Override
-    public boolean studentExists(String email) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM students WHERE email = ?");
-        ps.setString(1, email);
-        ResultSet rs = ps.executeQuery();
-        boolean exists = rs.next();
-        rs.close();
-        ps.close();
+    public boolean studentExists(String searchTerm) throws SQLException {
+        boolean exists = false;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (inputValidator.validateId(searchTerm)) {
+                ps = connection.prepareStatement("SELECT * FROM students WHERE id = ?::uuid");
+                ps.setObject(1, searchTerm, java.sql.Types.OTHER);
+            } else {
+                ps = connection.prepareStatement("SELECT * FROM students WHERE email = ?");
+                ps.setString(1, searchTerm);
+            }
+
+            rs = ps.executeQuery();
+            exists = rs.next();
+        } catch (SQLException e) {
+            System.err.println("SQL Exception: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+        }
 
         return exists;
     }
@@ -130,5 +151,25 @@ public class StudentDAO implements StudentDAOInterface {
         return ps.executeQuery();
     }
 
+    public HashMap<String, Integer> statistics() throws SQLException {
+        HashMap<String, Integer> statistics = new HashMap<>();
 
+        String sql = "SELECT " +
+                "  (SELECT COUNT(*) FROM students) AS totalStudents, " +
+                "  (SELECT COUNT(DISTINCT borrowedby) FROM documents WHERE borrowedby IN (SELECT id FROM students) AND reservedby IS NULL) AS borrowedDocs, " +
+                "  (SELECT COUNT(DISTINCT reservedby) FROM documents WHERE reservedby IN (SELECT id FROM students) AND borrowedby IS NULL) AS reservedDocs";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                statistics.put("totalStudents", rs.getInt("totalStudents"));
+                statistics.put("borrowedDocs", rs.getInt("borrowedDocs"));
+                statistics.put("reservedDocs", rs.getInt("reservedDocs"));
+            }
+        }
+
+        return statistics;
+
+    }
 }

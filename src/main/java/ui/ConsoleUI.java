@@ -97,9 +97,12 @@ public class ConsoleUI {
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 2:
+                manageUsersMenu(scanner);
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 3:
+                Student student = new Student(connection);
+                student.statistics();
                 handleMiniMenu(scanner, UserRole.ADMIN);
                 break;
             case 4:

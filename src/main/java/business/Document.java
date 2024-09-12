@@ -33,8 +33,8 @@ public class Document {
         this.connection = connection;
         this.book = new Book(connection);
         this.magazine = new Magazine(connection);
-        //this.scientificJournal = new ScientificJournal(connection);
-        //this.universityThesis = new UniversityThesis(connection);
+        this.scientificJournal = new ScientificJournal(connection);
+        this.universityThesis = new UniversityThesis(connection);
 
     }
 
@@ -83,8 +83,8 @@ public class Document {
         System.out.println("Magazines:");
         magazine.getMagazines();
         if (role == ConsoleUI.UserRole.ADMIN || role == ConsoleUI.UserRole.PROFESSOR) {
-            //scientificJournal.getScientificJournals();
-            //universityThesis.getUniversityThesis();
+            scientificJournal.getScientificJournals();
+            universityThesis.getTheses();
         }
     }
 }
