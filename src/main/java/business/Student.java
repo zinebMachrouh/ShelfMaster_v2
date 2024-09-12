@@ -1,6 +1,7 @@
 package main.java.business;
 
 import main.java.dao.StudentDAO;
+import main.java.utils.InputValidator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,10 +44,22 @@ public class Student extends User {
 
     public void addStudent(Scanner scanner) throws SQLException {
         System.out.println("Enter student name: ");
+        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid name.");
+            return;
+        }
         setName(scanner.nextLine());
         System.out.println("Enter student email: ");
+        if (!scanner.hasNextLine() || InputValidator.validateEmail(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid email.");
+            return;
+        }
         setEmail(scanner.nextLine());
         System.out.println("Enter student study program: ");
+        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid study program.");
+            return;
+        }
         this.studyProgram = scanner.nextLine();
         setId(generateUuid());
         studentDAO.addStudent(getId().toString(), getName(), getEmail(), this.studyProgram);
@@ -70,10 +83,22 @@ public class Student extends User {
 
     public void updateStudent(Scanner scanner , String id) throws SQLException {
         System.out.println("Enter student name: ");
+        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid name.");
+            return;
+        }
         setName(scanner.nextLine());
         System.out.println("Enter student email: ");
+        if (!scanner.hasNextLine() || InputValidator.validateEmail(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid email.");
+            return;
+        }
         setEmail(scanner.nextLine());
         System.out.println("Enter student study program: ");
+        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid study program.");
+            return;
+        }
         this.studyProgram = scanner.nextLine();
 
         studentDAO.updateStudent(id, getName(), getEmail(), this.studyProgram);

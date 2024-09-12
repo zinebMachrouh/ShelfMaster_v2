@@ -41,23 +41,6 @@ public class InputValidator {
         }
     }
 
-    public static boolean validatePages(String pages) {
-        try {
-            Integer.parseInt(pages);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public static boolean validateYear(String year) {
-        try {
-            Integer.parseInt(year);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     public static boolean validateEmail(String email) {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");

@@ -1,6 +1,7 @@
 package main.java.business;
 
 import main.java.dao.ProfessorDAO;
+import main.java.utils.InputValidator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -42,10 +43,22 @@ public class Professor extends User {
 
     public void addProfessor(Scanner scanner) throws SQLException {
         System.out.println("Enter professor name: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid name.");
+            return;
+        }
         setName(scanner.nextLine());
         System.out.println("Enter professor email: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.validateEmail(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid email.");
+            return;
+        }
         setEmail(scanner.nextLine());
         System.out.println("Enter professor department: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
+            System.out.println("Invalid input. Please enter a valid department.");
+            return;
+        }
         setDepartment(scanner.nextLine());
         setId(generateUuid());
         professorDAO.addProfessor(getId().toString(), getName(), getEmail(), getDepartment());
@@ -69,10 +82,25 @@ public class Professor extends User {
 
     public void updateProfessor(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter professor name: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
+            setName(getName());
+        } else {
+            setName(scanner.nextLine());
+        }
         setName(scanner.nextLine());
         System.out.println("Enter professor email: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.validateEmail(scanner.nextLine())) {
+            setEmail(getEmail());
+        } else {
+            setEmail(scanner.nextLine());
+        }
         setEmail(scanner.nextLine());
         System.out.println("Enter professor department: ");
+        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
+            setDepartment(getDepartment());
+        } else {
+            setDepartment(scanner.nextLine());
+        }
         setDepartment(scanner.nextLine());
 
         professorDAO.updateProfessor(id, getName(), getEmail(), getDepartment());
