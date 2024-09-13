@@ -127,9 +127,9 @@ public class Book extends Document{
         System.out.println("Enter book release date: ");
         DateUtils dateUtils = new DateUtils();
         if (scanner.hasNextLine()) {
-            setReleaseDate(String.valueOf(dateUtils.handleDate(scanner.nextLine())));
+            setReleaseDate(scanner.nextLine());
         }else{
-            setReleaseDate("");
+            setReleaseDate(getReleaseDate());
         }
 
         System.out.println("Enter book pages: ");

@@ -138,7 +138,7 @@ public class ScientificJournal extends Document {
         System.out.println("Enter journal release date: ");
         DateUtils dateUtils = new DateUtils();
         if (scanner.hasNextLine()) {
-            setReleaseDate(String.valueOf(dateUtils.handleDate(scanner.nextLine())));
+            setReleaseDate(scanner.nextLine());
         } else {
             setReleaseDate("");
         }

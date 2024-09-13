@@ -14,6 +14,7 @@ import java.util.UUID;
 public class ConsoleUI {
     private final Connection connection;
     private static Document document;
+    private static Library library;
 
     private static Session session = Session.getInstance();
 
@@ -33,6 +34,8 @@ public class ConsoleUI {
     public ConsoleUI(Connection connection) throws SQLException {
         this.connection = connection;
         this.document = new Document(connection);
+        this.library = new Library(connection);
+
         menu();
     }
 
@@ -186,7 +189,7 @@ public class ConsoleUI {
                 System.out.print("Enter Id: ");
                 String doc_id = scanner1.nextLine().trim();
 
-                document.getDocument(doc_id);
+                library.getDocument(doc_id);
                 System.out.println("Choose an action:");
                 System.out.println("1. Lend Document");
                 System.out.println("2. Reserve Document");
@@ -198,16 +201,16 @@ public class ConsoleUI {
                 try {
                     switch (intChoice) {
                         case "1": // Lend Document
-                            document.lendDocument(scanner1, doc_id);
+                            library.lendDocument(scanner1, doc_id);
                             break;
                         case "2": // Reserve Document
-                            document.reserveDocument(scanner1, doc_id);
+                            library.reserveDocument(scanner1, doc_id);
                             break;
                         case "3": // Cancel Reservation
-                            document.cancelReservation(doc_id);
+                            library.cancelReservation(doc_id);
                             break;
                         case "4": // Return Document
-                            document.returnDocument(doc_id);
+                            library.returnDocument(doc_id);
                             break;
                         default:
                             System.out.println("Invalid choice. Please select a valid option.");
@@ -219,7 +222,7 @@ public class ConsoleUI {
                 break;
             case 3:
                 System.out.println(BLUE + "+ My List Selected +" + RESET);
-                document.getUserDocuments();
+                library.getUserDocuments();
                 handleMiniMenu(scanner, UserRole.STUDENT);
                 break;
 
@@ -263,7 +266,7 @@ public class ConsoleUI {
                 System.out.print("Enter Id: ");
                 String doc_id = scanner1.nextLine().trim();
 
-                document.getDocument(doc_id);
+                library.getDocument(doc_id);
                 System.out.println("Choose an action:");
                 System.out.println("1. Lend Document");
                 System.out.println("2. Reserve Document");
@@ -275,16 +278,16 @@ public class ConsoleUI {
                 try {
                     switch (intChoice) {
                         case "1": // Lend Document
-                            document.lendDocument(scanner1, doc_id);
+                            library.lendDocument(scanner1, doc_id);
                             break;
                         case "2": // Reserve Document
-                            document.reserveDocument(scanner1, doc_id);
+                            library.reserveDocument(scanner1, doc_id);
                             break;
                         case "3": // Cancel Reservation
-                            document.cancelReservation(doc_id);
+                            library.cancelReservation(doc_id);
                             break;
                         case "4": // Return Document
-                            document.returnDocument(doc_id);
+                            library.returnDocument(doc_id);
                             break;
                         default:
                             System.out.println("Invalid choice. Please select a valid option.");
@@ -296,7 +299,7 @@ public class ConsoleUI {
                 break;
             case 3:
                 System.out.println(BLUE + "+ My List Selected +" + RESET);
-                document.getUserDocuments();
+                library.getUserDocuments();
                 handleMiniMenu(scanner, UserRole.PROFESSOR);
                 break;
 

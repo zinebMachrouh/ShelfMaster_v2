@@ -55,6 +55,10 @@ public class DateUtils {
     }
 
     public static LocalDate fromDateString(String date) {
+        if (date == null || date.trim().isEmpty()) {
+            return null; // Or you can return a default date, e.g., LocalDate.now()
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(date, formatter);
     }
