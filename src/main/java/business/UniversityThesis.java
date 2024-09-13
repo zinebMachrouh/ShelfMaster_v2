@@ -178,14 +178,7 @@ public class UniversityThesis extends Document {
         if (exists) {
             ResultSet rs = uniThesisDAO.getUniThesis(id);
             while (rs.next()) {
-                setId(UUID.fromString(rs.getString("id")));
-                setTitle(rs.getString("title"));
-                setAuthor(rs.getString("author"));
-                setReleaseDate(rs.getString("releasedate"));
-                setPages(rs.getInt("pages"));
-                this.university = rs.getString("university");
-                this.fieldOfStudy = rs.getString("fieldofstudy");
-                this.submittedYear = rs.getInt("submittedyear");
+                displayData(rs);
             }
         } else {
             System.out.println("University Thesis does not exist.");
@@ -227,7 +220,7 @@ public class UniversityThesis extends Document {
 
                 if (borrowedBy == null && reservedBy == null) {
                     output.append("Status: Available");
-                } else if (borrowedBy != null) {
+                } else if (borrowedBy != null && reservedBy == null) {
                     output.append("Status: Borrowed");
                 } else {
                     output.append("Status: Reserved");

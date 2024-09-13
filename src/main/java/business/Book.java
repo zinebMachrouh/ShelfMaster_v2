@@ -15,6 +15,7 @@ public class Book extends Document{
 
     private String isbn;
 
+
     public BookDAO bookDAO;
 
     public Book(UUID id, String title, String author, String releaseDate, int pages, String isbn, Connection connection) throws SQLException {
@@ -42,6 +43,8 @@ public class Book extends Document{
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
+
+
 
     public void addBook(Scanner scanner) throws SQLException {
         String title;
@@ -152,12 +155,7 @@ public class Book extends Document{
         if (exists){
             ResultSet rs = bookDAO.getBook(id);
             while (rs.next()){
-                setId(UUID.fromString(rs.getString("id")));
-                setTitle(rs.getString("title"));
-                setAuthor(rs.getString("author"));
-                setReleaseDate(rs.getString("releasedate"));
-                setPages(rs.getInt("pages"));
-                this.isbn = rs.getString("isbn");
+                displayData(rs);
             }
         } else {
             System.out.println("Book does not exist.");
@@ -197,7 +195,7 @@ public class Book extends Document{
 
                 if (borrowedBy == null && reservedBy == null) {
                     output.append("Status: Available");
-                } else if (borrowedBy != null) {
+                } else if (borrowedBy != null && reservedBy == null) {
                     output.append("Status: Borrowed");
                 } else {
                     output.append("Status: Reserved");

@@ -13,4 +13,6 @@ public interface DocumentDAOInterface {
     void cancelReservation(String id) throws SQLException;
 
     ResultSet checkDocumentStatus(String id) throws SQLException;
+
+    ResultSet getUserDocuments() throws SQLException;
 }

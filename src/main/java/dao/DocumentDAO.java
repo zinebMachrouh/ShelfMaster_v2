@@ -1,15 +1,18 @@
 package main.java.dao;
 
+import main.java.config.Session;
 import main.java.dao.interfaces.DocumentDAOInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class DocumentDAO implements DocumentDAOInterface {
 
     private final Connection connection;
+    private Session session = Session.getInstance();
 
     public DocumentDAO(Connection connection) {
         this.connection = connection;
@@ -74,5 +77,15 @@ public class DocumentDAO implements DocumentDAOInterface {
         PreparedStatement checkLimitStmt = connection.prepareStatement(checkLimitQuery);
         checkLimitStmt.setString(1, userId);
         return checkLimitStmt.executeQuery();
+    }
+
+    public ResultSet getUserDocuments() throws SQLException {
+        String  userId = session.getId().toString();
+        String userDocumentsQuery = "SELECT *, tableoid::regclass::text as src_table FROM documents WHERE borrowedBy = ?::uuid OR reservedBy = ?::uuid";
+        PreparedStatement userDocumentsStmt = connection.prepareStatement(userDocumentsQuery);
+        userDocumentsStmt.setString(1, userId);
+        userDocumentsStmt.setString(2, userId);
+
+        return userDocumentsStmt.executeQuery();
     }
 }

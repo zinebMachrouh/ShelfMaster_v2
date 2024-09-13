@@ -16,6 +16,7 @@ public class ScientificJournal extends Document {
     private String editor;
     public ScientificJournalDAO scientificJournalDAO;
 
+
     public ScientificJournal(UUID id, String title, String author, String releaseDate, int pages, String researchField, String editor, Connection connection) throws SQLException {
         super(id, title, author, releaseDate, pages, connection);
         this.researchField = researchField;
@@ -172,13 +173,7 @@ public class ScientificJournal extends Document {
         if (exists) {
             ResultSet rs = scientificJournalDAO.getScientificJournal(id);
             while (rs.next()) {
-                setId(UUID.fromString(rs.getString("id")));
-                setTitle(rs.getString("title"));
-                setAuthor(rs.getString("author"));
-                setReleaseDate(rs.getString("releasedate"));
-                setPages(rs.getInt("pages"));
-                this.researchField = rs.getString("researchfield");
-                this.editor = rs.getString("editor");
+                displayData(rs);
             }
         } else {
             System.out.println("Scientific journal does not exist.");
@@ -219,7 +214,7 @@ public class ScientificJournal extends Document {
 
                 if (borrowedBy == null && reservedBy == null) {
                     output.append("Status: Available");
-                } else if (borrowedBy != null) {
+                } else if (borrowedBy != null && reservedBy == null) {
                     output.append("Status: Borrowed");
                 } else {
                     output.append("Status: Reserved");

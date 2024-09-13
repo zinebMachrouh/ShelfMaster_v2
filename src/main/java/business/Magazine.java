@@ -139,12 +139,7 @@ public class Magazine extends Document {
         if (exists) {
             ResultSet rs = magazineDAO.getMagazine(id);
             while (rs.next()) {
-                setId(UUID.fromString(rs.getString("id")));
-                setTitle(rs.getString("title"));
-                setAuthor(rs.getString("author"));
-                setReleaseDate(rs.getString("releasedate"));
-                setPages(rs.getInt("pages"));
-                this.number = rs.getInt("number");
+                displayData(rs);
             }
         } else {
             System.out.println("Magazine does not exist.");
@@ -184,7 +179,7 @@ public class Magazine extends Document {
 
                 if (borrowedBy == null && reservedBy == null) {
                     output.append("Status: Available");
-                } else if (borrowedBy != null) {
+                } else if (borrowedBy != null && reservedBy == null) {
                     output.append("Status: Borrowed");
                 } else {
                     output.append("Status: Reserved");

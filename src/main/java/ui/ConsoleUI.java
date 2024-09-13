@@ -2,6 +2,7 @@ package main.java.ui;
 
 import main.java.business.*;
 import main.java.config.Session;
+import main.java.dao.ProfessorDAO;
 import main.java.dao.StudentDAO;
 
 import java.sql.Connection;
@@ -55,6 +56,7 @@ public class ConsoleUI {
             scanner.nextLine();
 
             Student student = new Student(connection);
+            Professor professor = new Professor(connection);
             switch (choice) {
                 case 1:
                     System.out.println(MAGENTA + "+" + RESET + " Please enter your email:");
@@ -80,6 +82,27 @@ public class ConsoleUI {
                     }
                     break;
                 case 2:
+                    System.out.println(MAGENTA + "+" + RESET + " Please enter your email:");
+                    String prof_email = scanner.nextLine();
+
+                    if (professor.professorExists(prof_email)) {
+                        ProfessorDAO professorDAO = new ProfessorDAO(connection);
+                        ResultSet loggedProf = professorDAO.getProfessor(prof_email);
+
+                        while (loggedProf.next()) {
+                            session.setId(UUID.fromString(loggedProf.getString("id")));
+                            session.setName(loggedProf.getString("name"));
+                            session.setEmail(loggedProf.getString("email"));
+                            session.setRole("professor");
+                        }
+
+                        session.setLoggedIn(true);
+
+                        System.out.println((BLUE + "+ Welcome back, " + RESET + session.getName() + BLUE + "!" + RESET));
+                        professorMenu(scanner);
+                    } else {
+                        System.out.println(RED + "+ Error: Professor not found. Please contact your administrator." + RESET);
+                    }
                     break;
                 case 3:
                     System.out.println(BLUE + "See you soon..." + RESET);
@@ -146,11 +169,10 @@ public class ConsoleUI {
         System.out.println(BLUE + "+ 1. " + RESET + "View Documents                     " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 2. " + RESET + "Search Documents                   " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+ 3. " + RESET + "My List                            " + BLUE + "+" + RESET);
-        System.out.println(BLUE + "+ 4. " + RESET + "Edit Profile                       " + BLUE + "+" + RESET);
-        System.out.println(BLUE + "+ 5. " + RESET + "Log Out                            " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 4. " + RESET + "Log Out                            " + BLUE + "+" + RESET);
         System.out.println(BLUE + "+++++++++++++++++++++++++++++++++++++++++" + RESET);
 
-        System.out.print(CYAN + "Please select an option (1-5): " + RESET);
+        System.out.print(CYAN + "Please select an option (1-4): " + RESET);
 
         switch (scanner.nextInt()) {
             case 1:
@@ -196,12 +218,12 @@ public class ConsoleUI {
                 handleMiniMenu(scanner, UserRole.STUDENT);
                 break;
             case 3:
+                System.out.println(BLUE + "+ My List Selected +" + RESET);
+                document.getUserDocuments();
                 handleMiniMenu(scanner, UserRole.STUDENT);
                 break;
+
             case 4:
-                handleMiniMenu(scanner, UserRole.STUDENT);
-                break;
-            case 5:
                 System.out.println(BLUE + "Logging out..." + RESET);
                 session.setLoggedIn(false);
                 session.setEmail(null);
@@ -214,6 +236,82 @@ public class ConsoleUI {
         }
     }
 
+    public void professorMenu(Scanner scanner) throws SQLException{
+        if (!session.isLoggedIn()) {
+            System.out.println(RED + "+ Error: You are not logged in. Please log in first." + RESET);
+            return;
+        }
+
+        System.out.println(BLUE + "+++++++++++++" + RESET + " Professor Menu " + BLUE + "+++++++++++++" + RESET);
+        System.out.println(BLUE + "+ 1. " + RESET + "View Documents                      " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 2. " + RESET + "Search Documents                    " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 3. " + RESET + "My List                             " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "+ 4. " + RESET + "Log Out                             " + BLUE + "+" + RESET);
+        System.out.println(BLUE + "++++++++++++++++++++++++++++++++++++++++++" + RESET);
+
+        System.out.print(CYAN + "Please select an option (1-4): " + RESET);
+
+        switch (scanner.nextInt()) {
+            case 1:
+                System.out.println(BLUE + "+ View Documents Selected +" + RESET);
+                document.displayDocuments(UserRole.PROFESSOR);
+                handleMiniMenu(scanner, UserRole.PROFESSOR);
+                break;
+            case 2:
+                Scanner scanner1 = new Scanner(System.in);
+                System.out.println(BLUE + "+ Search Documents Selected +" + RESET);
+                System.out.print("Enter Id: ");
+                String doc_id = scanner1.nextLine().trim();
+
+                document.getDocument(doc_id);
+                System.out.println("Choose an action:");
+                System.out.println("1. Lend Document");
+                System.out.println("2. Reserve Document");
+                System.out.println("3. Cancel Reservation");
+                System.out.println("4. Return Document");
+                System.out.print("Enter your choice: ");
+                String intChoice = scanner1.nextLine().trim();
+
+                try {
+                    switch (intChoice) {
+                        case "1": // Lend Document
+                            document.lendDocument(scanner1, doc_id);
+                            break;
+                        case "2": // Reserve Document
+                            document.reserveDocument(scanner1, doc_id);
+                            break;
+                        case "3": // Cancel Reservation
+                            document.cancelReservation(doc_id);
+                            break;
+                        case "4": // Return Document
+                            document.returnDocument(doc_id);
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please select a valid option.");
+                    }
+                } catch (SQLException e) {
+                    System.out.println("An error occurred: " + e.getMessage());
+                }
+                handleMiniMenu(scanner, UserRole.PROFESSOR);
+                break;
+            case 3:
+                System.out.println(BLUE + "+ My List Selected +" + RESET);
+                document.getUserDocuments();
+                handleMiniMenu(scanner, UserRole.PROFESSOR);
+                break;
+
+            case 4:
+                System.out.println(BLUE + "Logging out..." + RESET);
+                session.setLoggedIn(false);
+                session.setEmail(null);
+                session.setName(null);
+                session.setId(null);
+                System.out.println(BLUE + "You have been logged out." + RESET);
+                break;
+            default:
+                System.out.println(RED + "+ Error: Invalid choice. Please select a number between 1 and 5 +" + RESET);
+        }
+    }
 
     private  void handleMiniMenu(Scanner scanner, UserRole role) throws SQLException {
         boolean backToMainMenu = true;
@@ -237,7 +335,7 @@ public class ConsoleUI {
 
                         adminMenu(scanner);
                     } else if (role == UserRole.PROFESSOR) {
-
+                        professorMenu(scanner);
                     }
                     break;
                 case 2:

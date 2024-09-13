@@ -21,6 +21,9 @@ public class Document implements LendableInterface, ReservableInterface {
     private String author;
     private String releaseDate;
     private int pages;
+    private UUID borrowedBy = null;
+    private UUID reservedBy = null;
+
     private final DocumentDAO documentDAO;
 
     HashMap<String, Document> documents = new HashMap<>();
@@ -33,7 +36,6 @@ public class Document implements LendableInterface, ReservableInterface {
         this.pages = pages;
         this.connection = connection;
         this.documentDAO = new DocumentDAO(connection);
-
 
     }
 
@@ -61,6 +63,21 @@ public class Document implements LendableInterface, ReservableInterface {
     public int getPages() {
         return pages;
     }
+    public UUID getBorrowedBy() {
+        return borrowedBy;
+    }
+
+    public UUID getReservedBy() {
+        return reservedBy;
+    }
+
+    public void setBorrowedBy(UUID borrowedBy) {
+        this.borrowedBy = borrowedBy;
+    }
+
+    public void setReservedBy(UUID reservedBy) {
+        this.reservedBy = reservedBy;
+    }
 
     public void setId(UUID id) {
         this.id = id;
@@ -81,6 +98,8 @@ public class Document implements LendableInterface, ReservableInterface {
     public void setPages(int pages) {
         this.pages = pages;
     }
+
+
 
     public void displayDocuments(ConsoleUI.UserRole role) throws SQLException {
         System.out.println("Books:");
@@ -118,18 +137,42 @@ public class Document implements LendableInterface, ReservableInterface {
     private void loadBooks(BookDAO bookDAO) throws SQLException {
         ResultSet rsBooks = bookDAO.getAllBooks();
         while (rsBooks.next()) {
-            String id = rsBooks.getString("id");
+            String idStr = rsBooks.getString("id");
+            String borrowedByStr = rsBooks.getString("borrowedby");
+            String reservedByStr = rsBooks.getString("reservedby");
+
+            UUID id = null;
+            UUID borrowedBy = null;
+            UUID reservedBy = null;
+
+            if (idStr != null) {
+                id = UUID.fromString(idStr);
+            }
+
+            if (borrowedByStr != null && !borrowedByStr.isEmpty()) {
+                borrowedBy = UUID.fromString(borrowedByStr);
+            }
+
+            if (reservedByStr != null && !reservedByStr.isEmpty()) {
+                reservedBy = UUID.fromString(reservedByStr);
+            }
+
+            // Create a new Book object and set its properties
             Book bookDocument = new Book(connection);
-            bookDocument.setId(UUID.fromString(id));
+            bookDocument.setId(id);
             bookDocument.setTitle(rsBooks.getString("title"));
             bookDocument.setAuthor(rsBooks.getString("author"));
             bookDocument.setReleaseDate(rsBooks.getString("releasedate"));
             bookDocument.setPages(rsBooks.getInt("pages"));
             bookDocument.setIsbn(rsBooks.getString("isbn"));
-            documents.put(id, bookDocument);
+            bookDocument.setBorrowedBy(borrowedBy);
+            bookDocument.setReservedBy(reservedBy);
+
+            documents.put(idStr, bookDocument);
         }
         rsBooks.close();
     }
+
 
     private void loadMagazines(MagazineDAO magazineDAO) throws SQLException {
         ResultSet rsMagazines = magazineDAO.getAllMagazines();
@@ -142,10 +185,19 @@ public class Document implements LendableInterface, ReservableInterface {
             magazineDocument.setReleaseDate(rsMagazines.getString("releasedate"));
             magazineDocument.setPages(rsMagazines.getInt("pages"));
             magazineDocument.setNumber(rsMagazines.getInt("number"));
+
+            // Safely handle potential null values
+            String borrowedByStr = rsMagazines.getString("borrowedby");
+            String reservedByStr = rsMagazines.getString("reservedby");
+
+            magazineDocument.setBorrowedBy(borrowedByStr != null ? UUID.fromString(borrowedByStr) : null);
+            magazineDocument.setReservedBy(reservedByStr != null ? UUID.fromString(reservedByStr) : null);
+
             documents.put(id, magazineDocument);
         }
         rsMagazines.close();
     }
+
 
     private void loadScientificJournals(ScientificJournalDAO scientificJournalDAO) throws SQLException {
         ResultSet rsScientificJournals = scientificJournalDAO.getAllScientificJournals();
@@ -159,6 +211,14 @@ public class Document implements LendableInterface, ReservableInterface {
             journalDocument.setPages(rsScientificJournals.getInt("pages"));
             journalDocument.setResearchField(rsScientificJournals.getString("researchfield"));
             journalDocument.setEditor(rsScientificJournals.getString("editor"));
+
+            // Safely handle potential null values
+            String borrowedByStr = rsScientificJournals.getString("borrowedby");
+            String reservedByStr = rsScientificJournals.getString("reservedby");
+
+            journalDocument.setBorrowedBy(borrowedByStr != null ? UUID.fromString(borrowedByStr) : null);
+            journalDocument.setReservedBy(reservedByStr != null ? UUID.fromString(reservedByStr) : null);
+
             documents.put(id, journalDocument);
         }
         rsScientificJournals.close();
@@ -177,6 +237,14 @@ public class Document implements LendableInterface, ReservableInterface {
             thesisDocument.setUniversity(rsUniversityTheses.getString("university"));
             thesisDocument.setFieldOfStudy(rsUniversityTheses.getString("fieldofstudy"));
             thesisDocument.setSubmittedYear(rsUniversityTheses.getInt("submittedyear"));
+
+            // Safely handle potential null values
+            String borrowedByStr = rsUniversityTheses.getString("borrowedby");
+            String reservedByStr = rsUniversityTheses.getString("reservedby");
+
+            thesisDocument.setBorrowedBy(borrowedByStr != null ? UUID.fromString(borrowedByStr) : null);
+            thesisDocument.setReservedBy(reservedByStr != null ? UUID.fromString(reservedByStr) : null);
+
             documents.put(id, thesisDocument);
         }
         rsUniversityTheses.close();
@@ -216,8 +284,10 @@ public class Document implements LendableInterface, ReservableInterface {
         } else {
             System.out.println("Document not found.");
         }
+        documents.clear();
     }
 
+    @Override
     public void lendDocument(Scanner scanner, String documentId) throws SQLException {
         Session session = Session.getInstance();
         String userId = session.getId().toString();
@@ -272,6 +342,8 @@ public class Document implements LendableInterface, ReservableInterface {
             }
         }
     }
+
+    @Override
     public void returnDocument(String documentId) throws SQLException {
         Session session = Session.getInstance();
         String userId = session.getId().toString();
@@ -283,6 +355,7 @@ public class Document implements LendableInterface, ReservableInterface {
 
             if (reservedBy != null) {  // There is a reservation
                 documentDAO.lendDocument(documentId, reservedBy);
+                documentDAO.cancelReservation(documentId);
                 System.out.println("Document returned and lent to the next reserved user.");
             } else {  // No reservation
                 documentDAO.returnDocument(documentId);
@@ -294,6 +367,8 @@ public class Document implements LendableInterface, ReservableInterface {
             }
         }
     }
+
+    @Override
     public void reserveDocument(Scanner scanner, String documentId) throws SQLException {
         Session session = Session.getInstance();
         String userId = session.getId().toString();
@@ -335,6 +410,8 @@ public class Document implements LendableInterface, ReservableInterface {
             }
         }
     }
+
+    @Override
     public void cancelReservation(String documentId) throws SQLException {
         Session session = Session.getInstance();
         String userId = session.getId().toString();
@@ -353,5 +430,66 @@ public class Document implements LendableInterface, ReservableInterface {
             }
         }
     }
+
+    public void getUserDocuments() throws SQLException {
+        // Get all documents from the data source
+        getAllDocuments();
+        Session session = Session.getInstance();
+        String userIdStr = session.getId().toString();
+        UUID userId = UUID.fromString(userIdStr);
+
+        // Filter documents that are borrowed or reserved by the user
+        documents.values().stream()
+                .filter(document -> {
+                    UUID borrowedBy = document.getBorrowedBy();
+                    UUID reservedBy = document.getReservedBy();
+                    return (borrowedBy != null && borrowedBy.equals(userId)) || (reservedBy != null && reservedBy.equals(userId));
+                })
+                .forEach(document -> {
+                    System.out.println("ID: " + document.getId());
+                    System.out.println("Title: " + document.getTitle());
+                    System.out.println("Author: " + document.getAuthor());
+                    System.out.println("Release Date: " + document.getReleaseDate());
+                    System.out.println("Pages: " + document.getPages());
+                    if (document instanceof Book) {
+                        Book book = (Book) document;
+                        System.out.println("ISBN: " + book.getIsbn());
+                    } else if (document instanceof Magazine) {
+                        Magazine magazine = (Magazine) document;
+                        System.out.println("Number: " + magazine.getNumber());
+                    }else if (document instanceof ScientificJournal) {
+                        ScientificJournal journal = (ScientificJournal) document;
+                        System.out.println("Research Field: " + journal.getResearchField());
+                        System.out.println("Editor: " + journal.getEditor());
+                    } else if (document instanceof UniversityThesis) {
+                        UniversityThesis thesis = (UniversityThesis) document;
+                        System.out.println("University: " + thesis.getUniversity());
+                        System.out.println("Field of Study: " + thesis.getFieldOfStudy());
+                        System.out.println("Submitted Year: " + thesis.getSubmittedYear());
+                    }
+
+                    // Check status based on borrowedBy and reservedBy
+                    if (userId.equals(document.getReservedBy())) {
+                        System.out.println("Status: Reserved");
+                    } else if (userId.equals(document.getBorrowedBy())) {
+                        System.out.println("Status: Borrowed");
+                    }
+
+
+                });
+
+        // Check if no documents were borrowed or reserved by the user
+        boolean noDocuments = documents.values().stream()
+                .noneMatch(document -> {
+                    UUID borrowedBy = document.getBorrowedBy();
+                    UUID reservedBy = document.getReservedBy();
+                    return (borrowedBy != null && borrowedBy.equals(userId)) || (reservedBy != null && reservedBy.equals(userId));
+                });
+
+        if (noDocuments) {
+            System.out.println("You have not borrowed or reserved any documents.");
+        }
+    }
+
 
 }
