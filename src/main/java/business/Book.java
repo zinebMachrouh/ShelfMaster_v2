@@ -17,14 +17,14 @@ public class Book extends Document{
 
     public BookDAO bookDAO;
 
-    public Book(UUID id, String title, String author, String releaseDate, int pages, String isbn, Connection connection){
+    public Book(UUID id, String title, String author, String releaseDate, int pages, String isbn, Connection connection) throws SQLException {
         super(id, title, author, releaseDate, pages, connection);
         this.isbn = isbn;
 
         this.bookDAO = new BookDAO(connection);
     }
 
-    public Book(Connection connection){
+    public Book(Connection connection) throws SQLException {
         super(null, "", "", "", 0, connection);
         this.isbn = "";
 
@@ -38,6 +38,9 @@ public class Book extends Document{
 
     public String getIsbn() {
         return isbn;
+    }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public void addBook(Scanner scanner) throws SQLException {

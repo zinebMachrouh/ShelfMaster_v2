@@ -18,7 +18,7 @@ public class UniversityThesis extends Document {
 
     public UniThesisDAO uniThesisDAO;
 
-    public UniversityThesis(UUID id, String title, String author, String releaseDate, int pages, String university, String fieldOfStudy, int submittedYear, Connection connection) {
+    public UniversityThesis(UUID id, String title, String author, String releaseDate, int pages, String university, String fieldOfStudy, int submittedYear, Connection connection) throws SQLException {
         super(id, title, author, releaseDate, pages, connection);
         this.university = university;
         this.fieldOfStudy = fieldOfStudy;
@@ -26,7 +26,7 @@ public class UniversityThesis extends Document {
         this.uniThesisDAO = new UniThesisDAO(connection);
     }
 
-    public UniversityThesis(Connection connection) {
+    public UniversityThesis(Connection connection) throws SQLException {
         super(null, "", "", "", 0, connection);
         this.university = "";
         this.fieldOfStudy = "";
@@ -41,13 +41,22 @@ public class UniversityThesis extends Document {
     public String getUniversity() {
         return university;
     }
+    public void setUniversity(String university) {
+        this.university = university;
+    }
 
     public String getFieldOfStudy() {
         return fieldOfStudy;
     }
+    public void setFieldOfStudy(String fieldOfStudy) {
+        this.fieldOfStudy = fieldOfStudy;
+    }
 
     public int getSubmittedYear() {
         return submittedYear;
+    }
+    public void setSubmittedYear(int submittedYear) {
+        this.submittedYear = submittedYear;
     }
 
     public void addThesis(Scanner scanner) throws SQLException {

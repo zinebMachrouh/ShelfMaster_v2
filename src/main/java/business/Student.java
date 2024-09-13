@@ -43,27 +43,40 @@ public class Student extends User {
     }
 
     public void addStudent(Scanner scanner) throws SQLException {
-        System.out.println("Enter student name: ");
-        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid name.");
-            return;
-        }
-        setName(scanner.nextLine());
-        System.out.println("Enter student email: ");
-        if (!scanner.hasNextLine() || InputValidator.validateEmail(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid email.");
-            return;
-        }
-        setEmail(scanner.nextLine());
-        System.out.println("Enter student study program: ");
-        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid study program.");
-            return;
-        }
-        this.studyProgram = scanner.nextLine();
+        String name;
+        do {
+            System.out.println("Enter student name: ");
+            name = scanner.nextLine();
+            if (!InputValidator.handleAuthor(name)) {
+                System.out.println("Invalid input. Please enter a valid name.");
+            }
+        } while (!InputValidator.handleAuthor(name));
+        setName(name);
+
+        String email;
+        do {
+            System.out.println("Enter student email: ");
+            email = scanner.nextLine();
+            if (!InputValidator.validateEmail(email)) {
+                System.out.println("Invalid input. Please enter a valid email.");
+            }
+        } while (!InputValidator.validateEmail(email));
+        setEmail(email);
+
+        String studyProgram;
+        do {
+            System.out.println("Enter student study program: ");
+            studyProgram = scanner.nextLine();
+            if (!InputValidator.handleAuthor(studyProgram)) {
+                System.out.println("Invalid input. Please enter a valid study program.");
+            }
+        } while (!InputValidator.handleAuthor(studyProgram));
+        this.studyProgram = studyProgram;
+
         setId(generateUuid());
         studentDAO.addStudent(getId().toString(), getName(), getEmail(), this.studyProgram);
     }
+
 
     public boolean studentExists(String email) throws SQLException {
         boolean exists = studentDAO.studentExists(email);
@@ -81,28 +94,31 @@ public class Student extends User {
         return exists;
     }
 
-    public void updateStudent(Scanner scanner , String id) throws SQLException {
+    public void updateStudent(Scanner scanner, String id) throws SQLException {
         System.out.println("Enter student name: ");
-        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid name.");
-            return;
+        if (scanner.hasNextLine()) {
+            setName(scanner.nextLine());
+        } else {
+            setName(getName());
         }
-        setName(scanner.nextLine());
+
         System.out.println("Enter student email: ");
-        if (!scanner.hasNextLine() || InputValidator.validateEmail(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid email.");
-            return;
+        if (scanner.hasNextLine()) {
+            setEmail(scanner.nextLine());
+        } else {
+            setEmail(getEmail());
         }
-        setEmail(scanner.nextLine());
+
         System.out.println("Enter student study program: ");
-        if (!scanner.hasNextLine() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid study program.");
-            return;
+        if (scanner.hasNextLine()) {
+            this.studyProgram = scanner.nextLine();
+        } else {
+            this.studyProgram = this.studyProgram;
         }
-        this.studyProgram = scanner.nextLine();
 
         studentDAO.updateStudent(id, getName(), getEmail(), this.studyProgram);
     }
+
 
     public void deleteStudent() throws SQLException {
         studentDAO.deleteStudent(getId().toString());

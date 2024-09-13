@@ -42,27 +42,65 @@ public class Professor extends User {
     }
 
     public void addProfessor(Scanner scanner) throws SQLException {
-        System.out.println("Enter professor name: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid name.");
-            return;
-        }
-        setName(scanner.nextLine());
-        System.out.println("Enter professor email: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.validateEmail(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid email.");
-            return;
-        }
-        setEmail(scanner.nextLine());
-        System.out.println("Enter professor department: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
-            System.out.println("Invalid input. Please enter a valid department.");
-            return;
-        }
-        setDepartment(scanner.nextLine());
+        String name;
+        do {
+            System.out.println("Enter professor name: ");
+            name = scanner.nextLine();
+            if (name.isEmpty() || !InputValidator.handleAuthor(name)) {
+                System.out.println("Invalid input. Please enter a valid name.");
+            }
+        } while (name.isEmpty() || !InputValidator.handleAuthor(name));
+        setName(name);
+
+        String email;
+        do {
+            System.out.println("Enter professor email: ");
+            email = scanner.nextLine();
+            if (email.isEmpty() || !InputValidator.validateEmail(email)) {
+                System.out.println("Invalid input. Please enter a valid email.");
+            }
+        } while (email.isEmpty() || !InputValidator.validateEmail(email));
+        setEmail(email);
+
+        String department;
+        do {
+            System.out.println("Enter professor department: ");
+            department = scanner.nextLine();
+            if (department.isEmpty() || !InputValidator.handleAuthor(department)) {
+                System.out.println("Invalid input. Please enter a valid department.");
+            }
+        } while (department.isEmpty() || !InputValidator.handleAuthor(department));
+        setDepartment(department);
+
         setId(generateUuid());
         professorDAO.addProfessor(getId().toString(), getName(), getEmail(), getDepartment());
     }
+
+    public void updateProfessor(Scanner scanner, String id) throws SQLException {
+        System.out.println("Enter professor name: ");
+        if (scanner.hasNextLine()) {
+            setName(scanner.nextLine());
+        } else {
+            setName(getName());
+        }
+
+        System.out.println("Enter professor email: ");
+        if (scanner.hasNextLine()) {
+            setEmail(scanner.nextLine());
+        } else {
+            setEmail(getEmail());
+        }
+
+        System.out.println("Enter professor department: ");
+        if (scanner.hasNextLine()) {
+            setDepartment(scanner.nextLine());
+        } else {
+            setDepartment(getDepartment());
+        }
+
+        professorDAO.updateProfessor(id, getName(), getEmail(), getDepartment());
+    }
+
 
     public boolean professorExists(String searchTerm) throws SQLException {
         boolean exists = professorDAO.professorExists(searchTerm);
@@ -78,32 +116,6 @@ public class Professor extends User {
             System.out.println("Professor does not exist.");
         }
         return exists;
-    }
-
-    public void updateProfessor(Scanner scanner, String id) throws SQLException {
-        System.out.println("Enter professor name: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
-            setName(getName());
-        } else {
-            setName(scanner.nextLine());
-        }
-        setName(scanner.nextLine());
-        System.out.println("Enter professor email: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.validateEmail(scanner.nextLine())) {
-            setEmail(getEmail());
-        } else {
-            setEmail(scanner.nextLine());
-        }
-        setEmail(scanner.nextLine());
-        System.out.println("Enter professor department: ");
-        if (!scanner.hasNextLine() || scanner.nextLine().isEmpty() || InputValidator.handleAuthor(scanner.nextLine())) {
-            setDepartment(getDepartment());
-        } else {
-            setDepartment(scanner.nextLine());
-        }
-        setDepartment(scanner.nextLine());
-
-        professorDAO.updateProfessor(id, getName(), getEmail(), getDepartment());
     }
 
     public void deleteProfessor() throws SQLException {

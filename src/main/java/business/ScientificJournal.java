@@ -16,14 +16,14 @@ public class ScientificJournal extends Document {
     private String editor;
     public ScientificJournalDAO scientificJournalDAO;
 
-    public ScientificJournal(UUID id, String title, String author, String releaseDate, int pages, String researchField, String editor, Connection connection) {
+    public ScientificJournal(UUID id, String title, String author, String releaseDate, int pages, String researchField, String editor, Connection connection) throws SQLException {
         super(id, title, author, releaseDate, pages, connection);
         this.researchField = researchField;
         this.editor = editor;
         this.scientificJournalDAO = new ScientificJournalDAO(connection);
     }
 
-    public ScientificJournal(Connection connection) {
+    public ScientificJournal(Connection connection) throws SQLException {
         super(null, "", "", "", 0, connection);
         this.researchField = "";
         this.editor = "";
@@ -36,6 +36,16 @@ public class ScientificJournal extends Document {
 
     public String getResearchField() {
         return researchField;
+    }
+    public void setResearchField(String researchField) {
+        this.researchField = researchField;
+    }
+
+    public String getEditor() {
+        return editor;
+    }
+    public void setEditor(String editor) {
+        this.editor = editor;
     }
 
     public void addScientificJournal(Scanner scanner) throws SQLException {

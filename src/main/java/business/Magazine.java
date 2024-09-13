@@ -16,14 +16,14 @@ public class Magazine extends Document {
 
     public MagazineDAO magazineDAO;
 
-    public Magazine(UUID id, String title, String author, String releaseDate, int pages, int number, Connection connection) {
+    public Magazine(UUID id, String title, String author, String releaseDate, int pages, int number, Connection connection) throws SQLException {
         super(id, title, author, releaseDate, pages, connection);
         this.number = number;
 
         this.magazineDAO = new MagazineDAO(connection);
     }
 
-    public Magazine(Connection connection) {
+    public Magazine(Connection connection) throws SQLException {
         super(null, "", "", "", 0, connection);
         this.number = 0;
 
@@ -36,6 +36,9 @@ public class Magazine extends Document {
 
     public int getNumber() {
         return number;
+    }
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public void addMagazine(Scanner scanner) throws SQLException {
