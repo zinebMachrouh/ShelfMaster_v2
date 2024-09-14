@@ -58,6 +58,11 @@ Here's an overview of the project structure for **ShelfMaster**:
 - 🔐 **User Management**: Manage both student and professor accounts with different permissions for borrowing and reserving.
 - 🛠 **Database Integration**: Seamless integration with PostgreSQL, allowing for persistent storage of all library records.
 
+## 🚩 Jira Board
+
+Here's a snapshot of the Jira board used for managing the project tasks and issues:
+[![Jira Board](./src/main/resources/Jira.jpeg)](./src/main/resources/Jira.jpeg)
+
 ## 🎨 UML Diagrams
 
 Here's a UML `Class Diagram` and `UseCase Diagram` to give you a high-level view of the architecture:
