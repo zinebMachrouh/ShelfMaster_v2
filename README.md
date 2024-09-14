@@ -58,6 +58,13 @@ Here's an overview of the project structure for **ShelfMaster**:
 - 🔐 **User Management**: Manage both student and professor accounts with different permissions for borrowing and reserving.
 - 🛠 **Database Integration**: Seamless integration with PostgreSQL, allowing for persistent storage of all library records.
 
+## 🎨 UML Class Diagram
+
+Here's a UML `class diagram` to give you a high-level view of the architecture:
+
+[![UML Class Diagram](./src/main/resources/UML.png)](./src/main/resources/UML.png)
+
+
 ## 🛠️ How to Use ShelfMaster
 
 ### Prerequisites

@@ -186,8 +186,8 @@ public class UniversityThesis extends Document {
         return exists;
     }
 
-    public void deleteThesis() throws SQLException {
-        uniThesisDAO.deleteUniThesis(getId().toString());
+    public void deleteThesis(String id) throws SQLException {
+        uniThesisDAO.deleteUniThesis(id);
     }
 
     public void getTheses() throws SQLException {
@@ -275,7 +275,7 @@ public class UniversityThesis extends Document {
                         System.out.println("Enter thesis ID: ");
                         String id = scanner.nextLine();
                         if (thesisExists(id)) {
-                            deleteThesis();
+                            deleteThesis(id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());

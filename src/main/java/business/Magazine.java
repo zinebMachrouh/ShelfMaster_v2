@@ -147,8 +147,8 @@ public class Magazine extends Document {
         return exists;
     }
 
-    public void deleteMagazine() throws SQLException {
-        magazineDAO.deleteMagazine(getId().toString());
+    public void deleteMagazine(String id) throws SQLException {
+        magazineDAO.deleteMagazine(id);
     }
 
     public void getMagazines() throws SQLException {
@@ -227,7 +227,7 @@ public class Magazine extends Document {
                     System.out.println("Enter magazine ID: ");
                     id = scanner.nextLine();
                     if (magazineExists(id)) {
-                        deleteMagazine();
+                        deleteMagazine(id);
                     }
                     break;
                 case 4:

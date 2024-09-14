@@ -93,7 +93,7 @@ public class ScientificJournalDAO implements SciJournalDAOInterface {
             ps.setString(i++, author);
         }
         if (!releaseDate.isEmpty()) {
-            ps.setString(i++, releaseDate);
+            ps.setObject(i++, DateUtils.fromDateString(releaseDate));
         }
         if (pages != 0) {
             ps.setInt(i++, pages);

@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -163,8 +164,8 @@ public class Book extends Document{
         return exists;
     }
 
-    public void deleteBook() throws SQLException {
-        bookDAO.deleteBook(getId().toString());
+    public void deleteBook(String id) throws SQLException {
+        bookDAO.deleteBook(id);
     }
 
     public void getBooks() throws SQLException {
@@ -249,7 +250,7 @@ public class Book extends Document{
                         System.out.println("Enter book ID: ");
                         String id = scanner.nextLine();
                         if (bookExists(id)) {
-                            deleteBook();
+                            deleteBook(id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());

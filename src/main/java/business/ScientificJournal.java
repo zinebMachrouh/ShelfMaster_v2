@@ -181,8 +181,8 @@ public class ScientificJournal extends Document {
         return exists;
     }
 
-    public void deleteScientificJournal() throws SQLException {
-        scientificJournalDAO.deleteScientificJournal(getId().toString());
+    public void deleteScientificJournal(String id) throws SQLException {
+        scientificJournalDAO.deleteScientificJournal(id);
     }
 
     public void getScientificJournals() throws SQLException {
@@ -268,7 +268,7 @@ public class ScientificJournal extends Document {
                         System.out.println("Enter journal ID: ");
                         String id = scanner.nextLine();
                         if (scientificJournalExists(id)) {
-                            deleteScientificJournal();
+                            deleteScientificJournal(id);
                         }
                     } catch (SQLException e) {
                         System.err.println("SQL Exception: " + e.getMessage());
